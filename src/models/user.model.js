@@ -39,12 +39,6 @@ const userSchema = mongoose.Schema(
       },
       private: true, // used by the toJSON plugin
     },
-    country: {
-      type: String,
-      required: true,
-      minlength: 3,
-      maxlength: 30,
-    },
     role: {
       type: String,
       required: true,

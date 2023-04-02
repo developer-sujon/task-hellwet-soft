@@ -9,7 +9,6 @@ const register = {
     name: Joi.string().min(3).max(30).required(),
     email: Joi.string().required().email(),
     password: Joi.string().required().custom(password),
-    country: Joi.string().min(3).max(100).required(),
     photo: Joi.string(),
   }),
 };

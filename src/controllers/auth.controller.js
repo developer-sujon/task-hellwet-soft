@@ -6,6 +6,7 @@ const catchAsync = require('../utils/catchAsync');
 const { authService, userService, tokenService, emailService, profileService } = require('../services');
 const genRand = require('../helpers/genRand');
 const { Otp } = require('../models');
+const ApiError = require('../utils/ApiError');
 
 const register = catchAsync(async (req, res) => {
   const user = await userService.createUser(req.body);
@@ -31,6 +32,11 @@ const refreshTokens = catchAsync(async (req, res) => {
 
 const forgotPassword = catchAsync(async (req, res) => {
   const { email } = req.body;
+
+  if (!(await userService.getUserByEmail(email))) {
+    throw new ApiError(httpStatus.NOT_FOUND, 'user not found');
+  }
+
   const randomOtp = genRand(6);
   new Otp({
     email,
