@@ -142,7 +142,7 @@ const ResetPassword = () => {
 
                         <div className="d-grid">
                           <button className="btn btn-primary btn-block login-btn mt-2" type="submit">
-                            {isLoading ? <Spinner size="sm" color="light" /> : t('Sign up')}
+                            {isLoading ? <Spinner size="sm" color="light" /> : t('reset password')}
                           </button>
                         </div>
                       </Form>

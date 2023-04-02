@@ -25,6 +25,16 @@ const privateRoutes = [
     accessPermission: null,
   },
   {
+    path: '/dashboard',
+    element: (
+      <LazyLoading>
+        <Dashboard />
+      </LazyLoading>
+    ),
+    roles: ['user', 'admin'],
+    accessPermission: null,
+  },
+  {
     path: '/task',
     element: (
       <LazyLoading>

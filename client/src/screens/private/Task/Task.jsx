@@ -1,25 +1,38 @@
 //External lib imports
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { Row, Col, Container, Button, Card, ListGroup, Badge, OverlayTrigger, Tooltip, Spinner } from 'react-bootstrap';
 import { useTranslation } from 'react-i18next';
-import { AiOutlineArrowRight, AiOutlineEdit } from 'react-icons/ai';
+import { AiOutlineEdit, AiOutlineFolderView } from 'react-icons/ai';
 
 //Internal lib imports
 import Layout from '../../../layout/Layout';
-import { useCategoryDeleteMutation, useCategoryListQuery } from '../../../redux/services/categoryService';
+import { useTaskDeleteMutation, useTaskListQuery } from '../../../redux/services/taskService';
 import Table from '../../../components/Table/Table';
 import { BsTrash } from 'react-icons/bs';
 import AleartMessage from '../../../helpers/AleartMessage';
 import { Link } from 'react-router-dom';
 import DateFormatter from '../../../utils/DateFormatter';
+import TaskDetailsModal from './TaskDetailsModal';
 
-const Category = () => {
+const Task = () => {
+  const [singleTask, setSingleTask] = useState({});
+  const [show, setShow] = useState(false);
+  const handleClose = () => {
+    setShow(false);
+    setSingleTask({});
+  };
+  const handleShow = (d) => {
+    setShow(true);
+    setSingleTask(d);
+  };
+
   const { t } = useTranslation();
-  const { data, isLoading } = useCategoryListQuery();
-  const [categoryDelete] = useCategoryDeleteMutation();
+  const { data: tasks, isLoading } = useTaskListQuery();
+  const [taskDelete] = useTaskDeleteMutation();
+  const data = tasks?.data || [];
 
   const deleteItem = (id) => {
-    AleartMessage.Delete(id, categoryDelete);
+    AleartMessage.Delete(id, taskDelete);
   };
 
   const columns = [
@@ -29,38 +42,45 @@ const Category = () => {
       sort: true,
     },
     {
-      Header: t('category'),
-      accessor: (d) => (
-        <div className="bodySmall">
-          <Badge bg="" style={{ backgroundColor: d?.color }} pill>
-            {' '}
-          </Badge>
-          <span className="ms-1"> {d?.name}</span>
-        </div>
-      ),
-      sort: true,
-    },
-
-    {
-      Header: t('create date'),
-      accessor: (d) => DateFormatter(d?.createdAt),
+      Header: t('title'),
+      accessor: (d) => <span className="ms-1"> {d.title}</span>,
       sort: true,
     },
     {
-      Header: t('visibility'),
+      Header: t('status'),
       accessor: (d) => (
         <div className="bodySmall">
-          {d?.visibility ? (
+          {d?.status === 'new' ? (
+            <Badge bg="info" pill>
+              <span className="ms-1">{t(d?.status)}</span>
+            </Badge>
+          ) : d?.status === 'pending' ? (
             <Badge bg="primary" pill>
-              <span className="ms-1">{t('public')}</span>
+              <span className="ms-1">{t(d?.status)}</span>
+            </Badge>
+          ) : d?.status === 'canceled' ? (
+            <Badge bg="danger" pill>
+              <span className="ms-1">{t(d?.status)}</span>
+            </Badge>
+          ) : d?.status === 'complete' ? (
+            <Badge bg="success" pill>
+              <span className="ms-1">{t(d?.status)}</span>
             </Badge>
           ) : (
-            <Badge bg="danger" pill>
-              <span className="ms-1"> {t('private')}</span>
-            </Badge>
+            ''
           )}
         </div>
       ),
+      sort: true,
+    },
+    {
+      Header: t('due date'),
+      accessor: (d) => DateFormatter(d?.dueDate),
+      sort: true,
+    },
+    {
+      Header: t('create date'),
+      accessor: (d) => DateFormatter(d?.createdAt),
       sort: true,
     },
     {
@@ -70,9 +90,18 @@ const Category = () => {
           <OverlayTrigger
             placement="top"
             delay={{ show: 250, hide: 400 }}
+            overlay={<Tooltip id="button-tooltip">View</Tooltip>}
+          >
+            <Button variant="primary" style={{ padding: '5px 10px' }} className="me-1" onClick={() => handleShow(d)}>
+              <AiOutlineFolderView />
+            </Button>
+          </OverlayTrigger>
+          <OverlayTrigger
+            placement="top"
+            delay={{ show: 250, hide: 400 }}
             overlay={<Tooltip id="button-tooltip">Edit</Tooltip>}
           >
-            <Link to={`/category-create-update?id=${d?.id}`}>
+            <Link to={`/task-create-update?id=${d?.id}`}>
               <Button variant="primary" style={{ padding: '5px 10px' }} className="me-1">
                 <AiOutlineEdit />
               </Button>
@@ -118,10 +147,10 @@ const Category = () => {
           <Card.Body>
             <Row>
               <Col className="d-flex justify-content-between p-2" sm={12}>
-                <h5>{t('categories')}</h5>
-                <Link to={'/category-create-update'}>
+                <h5>{t('taks')}</h5>
+                <Link to={'/task-create-update'}>
                   <Button size="sm" variant="primary">
-                    {t('create category')}
+                    {t('create Task')}
                   </Button>
                 </Link>
               </Col>
@@ -144,9 +173,10 @@ const Category = () => {
             </Row>
           </Card.Body>
         </Card>
+        <TaskDetailsModal show={show} handleClose={handleClose} singleTask={singleTask} />
       </Container>
     </Layout>
   );
 };
 
-export default Category;
+export default Task;

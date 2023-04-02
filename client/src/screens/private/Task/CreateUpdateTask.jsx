@@ -7,26 +7,23 @@ import * as yup from 'yup';
 
 //Internal lib imports
 import Layout from '../../../layout/Layout';
-import {
-  useCategoryCreateMutation,
-  useCategoryListQuery,
-  useCategoryUpdateMutation,
-} from '../../../redux/services/categoryService';
+import { useTaskCreateMutation, useTaskListQuery, useTaskUpdateMutation } from '../../../redux/services/taskService';
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 
-const CreateUpdateCategory = () => {
+const CreateUpdateTask = () => {
   let [objectID, SetObjectID] = useState(null);
   const [details, setDetails] = useState({
-    name: '',
-    color: '#21bf73',
-    visibility: true,
+    title: '',
+    descriptions: '',
+    dueDate: '',
+    status: '',
   });
   const { t } = useTranslation();
   const navigate = useNavigate();
-  const { data: allCategory } = useCategoryListQuery();
-  const [categoryCreate, { isLoading: createLoading, isSuccess: createSuccess }] = useCategoryCreateMutation();
-  const [categoryUpdate, { isLoading: updateLoading, isSuccess: updateSuccess }] = useCategoryUpdateMutation();
+  const { data: allTask } = useTaskListQuery();
+  const [taskCreate, { isLoading: createLoading, isSuccess: createSuccess }] = useTaskCreateMutation();
+  const [TaskUpdate, { isLoading: updateLoading, isSuccess: updateSuccess }] = useTaskUpdateMutation();
 
   useEffect(() => {
     let params = new URLSearchParams(window.location.search);
@@ -35,15 +32,14 @@ const CreateUpdateCategory = () => {
       SetObjectID(id);
     }
 
-    if (objectID && allCategory) {
-      setDetails(allCategory.find((item) => item.id === objectID));
+    if (objectID && allTask) {
+      setDetails(allTask?.data?.find((item) => item.id === objectID));
     }
-  }, [objectID, allCategory]);
+  }, [objectID, allTask]);
 
   const {
     control,
     handleSubmit,
-    register,
     reset,
     formState: { errors },
   } = useForm({
@@ -51,9 +47,14 @@ const CreateUpdateCategory = () => {
     defaultValues: details,
     resolver: yupResolver(
       yup.object({
-        name: yup.string().required(t('name is required')).min(3, t('name must be 3 characters long')),
-        color: yup.string().required(t('color is required')),
-        visibility: yup.boolean(),
+        title: yup
+          .string()
+          .required(t('title is required'))
+          .min(3, t('title must be 3 characters long'))
+          .max(30, t('title maximum be 30 characters')),
+        descriptions: yup.string().required(t('descriptions is required')),
+        dueDate: yup.date(),
+        status: yup.string().required(t('status is required')),
       })
     ),
   });
@@ -67,22 +68,23 @@ const CreateUpdateCategory = () => {
   /*
    * form handle submit
    */
-  const submitForm = ({ name, visibility, color }) => {
+  const submitForm = ({ title, descriptions, dueDate, status }) => {
     const postBody = {
-      name,
-      visibility,
-      color,
+      title,
+      descriptions,
+      dueDate,
+      status,
     };
     if (!objectID) {
-      categoryCreate(postBody);
+      taskCreate(postBody);
     } else {
-      categoryUpdate({ id: objectID, postBody });
+      TaskUpdate({ id: objectID, postBody });
     }
   };
 
   useEffect(() => {
     if (createSuccess || updateSuccess) {
-      navigate('/categories');
+      navigate('/task');
     }
   }, [createSuccess, updateSuccess]);
 
@@ -92,71 +94,104 @@ const CreateUpdateCategory = () => {
         <Card>
           <Card.Body>
             <Row>
-              <h5>{t(`${objectID ? 'Update Category' : 'Save Category'}`)}</h5>
+              <h5>{t(`${objectID ? 'Update Task' : 'Save Task'}`)}</h5>
               <hr className="bg-light" />
               <Col>
                 <Form onSubmit={handleSubmit(submitForm)} onReset={reset}>
-                  <Row>
+                  <Row class>
                     <Col sm={4}>
-                      <Form.Group className="mb-3" controlId="name">
-                        <Form.Label>{t('name')}</Form.Label>
+                      <Form.Group className="mb-3" controlId="title">
+                        <Form.Label>{t('title')}</Form.Label>
                         <Controller
                           control={control}
-                          name="name"
+                          name="title"
                           defaultValue=""
                           render={({ field: { onChange, onBlur, value, ref } }) => (
                             <Form.Control
                               onChange={onChange}
                               value={value}
                               ref={ref}
-                              isInvalid={errors.name}
-                              placeholder={t('name of the Category')}
+                              isInvalid={errors.title}
+                              placeholder={t('title of the task')}
                               type="text"
                               size="sm"
                             />
                           )}
                         />
-                        {errors.name && <Form.Text className="text-danger">{errors.name.message}</Form.Text>}
+                        {errors.title && <Form.Text className="text-danger">{errors.title.message}</Form.Text>}
                       </Form.Group>
                     </Col>
                     <Col sm={4}>
-                      <Form.Group className="mb-3" controlId="color">
-                        <Form.Label>{t('color')}</Form.Label>
+                      <Form.Group className="mb-3" controlId="dueData">
+                        <Form.Label>{t('dueData')}</Form.Label>
                         <Controller
                           control={control}
-                          name="color"
+                          name="dueDate"
                           defaultValue=""
                           render={({ field: { onChange, onBlur, value, ref } }) => (
                             <Form.Control
                               onChange={onChange}
                               value={value}
                               ref={ref}
-                              isInvalid={errors.password}
-                              type="color"
+                              isInvalid={errors.dueDate}
+                              placeholder={t('dueData of the task')}
+                              type="date"
                               size="sm"
                             />
                           )}
                         />
-                        {errors.password && <Form.Text className="text-danger">{errors.password.message}</Form.Text>}
+                        {errors.dueDate && <Form.Text className="text-danger">{errors.dueData.message}</Form.Text>}
+                      </Form.Group>
+                    </Col>
+                    <Col sm={4}>
+                      <Form.Group className="mb-3" controlId="status">
+                        <Form.Label>{t('status')}</Form.Label>
+                        <Controller
+                          control={control}
+                          name="status"
+                          defaultValue=""
+                          render={({ field: { onChange, onBlur, value, ref } }) => (
+                            <Form.Select
+                              onChange={onChange}
+                              value={value}
+                              ref={ref}
+                              isInvalid={errors.status}
+                              placeholder={t('status of the agent')}
+                              type="text"
+                              size="sm"
+                            >
+                              <option value="">{t('choice status')}</option>
+                              <option value="new">{t('new')}</option>
+                              <option value="pending">{t('pending')}</option>
+                              <option value="canceled">{t('canceled')}</option>
+                              <option value="complete">{t('complete')}</option>
+                            </Form.Select>
+                          )}
+                        />
+                        {errors.status && <Form.Text className="text-danger">{errors.status.message}</Form.Text>}
                       </Form.Group>
                     </Col>
                     <Col sm={12}>
-                      <Form.Group className="mb-3" controlId="visibility">
-                        <Form.Label>{t('visibility')}</Form.Label>
+                      <Form.Group className="mb-3" controlId="descriptions">
+                        <Form.Label>{t('descriptions')}</Form.Label>
                         <Controller
                           control={control}
-                          name="visibility"
+                          name="descriptions"
                           defaultValue=""
                           render={({ field: { onChange, onBlur, value, ref } }) => (
-                            <Form.Check
-                              type={'checkbox'}
-                              label={t(`the category is ${!value ? 'private' : 'public'}`)}
-                              checked={value}
-                              {...register('visibility')}
+                            <Form.Control
+                              onChange={onChange}
+                              value={value}
+                              ref={ref}
+                              isInvalid={errors.descriptions}
+                              placeholder={t('descriptions of the task')}
+                              type="text"
+                              size="sm"
+                              as={'textarea'}
                             />
                           )}
                         />
-                        {errors.password && <Form.Text className="text-danger">{errors.password.message}</Form.Text>}
+                        {errors.descriptions && <Form.Text className="text-danger">{errors.descriptions.message}</Form.Text>}
                       </Form.Group>
                     </Col>
                   </Row>
@@ -178,4 +213,4 @@ const CreateUpdateCategory = () => {
   );
 };
 
-export default CreateUpdateCategory;
+export default CreateUpdateTask;

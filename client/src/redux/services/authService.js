@@ -60,7 +60,7 @@ export const authService = basefetchBaseQuery.injectEndpoints({
       async onQueryStarted(arg, { queryFulfilled, dispatch }) {
         try {
           const result = await queryFulfilled;
-          //SessionHelper.ResetOtp();
+          SessionHelper.ResetOtp();
         } catch (err) {
           console.log(err);
         }
