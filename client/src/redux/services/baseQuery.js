@@ -6,9 +6,11 @@ import ToastMessage from '../../helpers/ToastMessage';
 import { setLoading } from '../slice/settingReducer';
 import { setLogout } from '../slice/authReducer';
 
+const SERVER_URL =process.env.REACT_APP_SERVER_URL|| "https://task-hellwet-soft-production.up.railway.app/api/v1"
+
 const basefetchBaseQuery = (url) => {
   const baseQuery = fetchBaseQuery({
-    baseUrl: `${process.env.REACT_APP_SERVER_URL}/${url}`,
+    baseUrl: `${SERVER_URL}/${url}`,
     prepareHeaders: (headers, { getState }) => {
       const {
         settingReducer: { language },
