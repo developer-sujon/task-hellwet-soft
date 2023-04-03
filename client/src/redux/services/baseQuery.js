@@ -1,28 +1,28 @@
 //External Lib Import
-import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react';
+import { fetchBaseQuery } from '@reduxjs/toolkit/query/react';
 
 //Internal Lib Import
-import { setLogout } from '../slice/authReducer';
-import { setLoading } from '../slice/settingReducer';
 import ToastMessage from '../../helpers/ToastMessage';
+import { setLoading } from '../slice/settingReducer';
+import { setLogout } from '../slice/authReducer';
 
-const baseQuery = fetchBaseQuery({
-  baseUrl: process.env.REACT_APP_SERVER_URL,
-  prepareHeaders: async (headers, { getState, endpoint }) => {
-    const {
-      settingReducer: { language },
-      authReducer: { accessToken },
-    } = getState();
+const basefetchBaseQuery = (url) => {
+  const baseQuery = fetchBaseQuery({
+    baseUrl: `${process.env.REACT_APP_SERVER_URL}/${url}`,
+    prepareHeaders: (headers, { getState }) => {
+      const {
+        settingReducer: { language },
+        authReducer: { accessToken },
+      } = getState();
 
-    headers.set('authorization', accessToken ? `Bearer ${accessToken}` : '');
-    headers.set('accept-language', language);
-    return headers;
-  },
-});
+      headers.set('authorization', accessToken ? `Bearer ${accessToken}` : '');
+      headers.set('accept-language', language);
+      return headers;
+    },
+  });
+  return async (args, api, extraOptions) => {
+    api.dispatch(setLoading(true));
 
-const basefetchBaseQuery = createApi({
-  reducerPath: 'api',
-  baseQuery: async (args, api, extraOptions) => {
     const { error, data } = await baseQuery(args, api, extraOptions);
 
     if (error) {
@@ -49,9 +49,7 @@ const basefetchBaseQuery = createApi({
       }
       return { data };
     }
-  },
-  tagTypes: [],
-  endpoints: (builder) => ({}),
-});
+  };
+};
 
 export default basefetchBaseQuery;

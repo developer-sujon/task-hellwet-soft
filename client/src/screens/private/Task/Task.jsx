@@ -147,7 +147,7 @@ const Task = () => {
           <Card.Body>
             <Row>
               <Col className="d-flex justify-content-between p-2" sm={12}>
-                <h5>{t('taks')}</h5>
+                <h5>{t('task')}</h5>
                 <Link to={'/task-create-update'}>
                   <Button size="sm" variant="primary">
                     {t('create Task')}

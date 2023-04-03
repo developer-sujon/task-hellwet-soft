@@ -10,8 +10,11 @@ import Layout from '../../../layout/Layout';
 import { useTaskCreateMutation, useTaskListQuery, useTaskUpdateMutation } from '../../../redux/services/taskService';
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { useLazyDashboardSummaryQuery } from '../../../redux/services/dashboardService';
 
 const CreateUpdateTask = () => {
+  const [skip, setSkip] = useState(true);
+
   let [objectID, SetObjectID] = useState(null);
   const [details, setDetails] = useState({
     title: '',
@@ -24,6 +27,8 @@ const CreateUpdateTask = () => {
   const { data: allTask } = useTaskListQuery();
   const [taskCreate, { isLoading: createLoading, isSuccess: createSuccess }] = useTaskCreateMutation();
   const [TaskUpdate, { isLoading: updateLoading, isSuccess: updateSuccess }] = useTaskUpdateMutation();
+  const profileTrigger = useLazyDashboardSummaryQuery();
+  const [deshBoardTriggerFunc] = profileTrigger;
 
   useEffect(() => {
     let params = new URLSearchParams(window.location.search);
@@ -84,9 +89,11 @@ const CreateUpdateTask = () => {
 
   useEffect(() => {
     if (createSuccess || updateSuccess) {
+      const response = async () => await deshBoardTriggerFunc();
+      response();
       navigate('/task');
     }
-  }, [createSuccess, updateSuccess]);
+  }, [createSuccess, updateSuccess, skip]);
 
   return (
     <Layout>
@@ -122,8 +129,8 @@ const CreateUpdateTask = () => {
                       </Form.Group>
                     </Col>
                     <Col sm={4}>
-                      <Form.Group className="mb-3" controlId="dueData">
-                        <Form.Label>{t('dueData')}</Form.Label>
+                      <Form.Group className="mb-3" controlId="dueDate">
+                        <Form.Label>{t('dueDate')}</Form.Label>
                         <Controller
                           control={control}
                           name="dueDate"
@@ -134,13 +141,13 @@ const CreateUpdateTask = () => {
                               value={value}
                               ref={ref}
                               isInvalid={errors.dueDate}
-                              placeholder={t('dueData of the task')}
+                              placeholder={t('dueDate of the task')}
                               type="date"
                               size="sm"
                             />
                           )}
                         />
-                        {errors.dueDate && <Form.Text className="text-danger">{errors.dueData.message}</Form.Text>}
+                        {errors.dueDate && <Form.Text className="text-danger">{errors.dueDate.message}</Form.Text>}
                       </Form.Group>
                     </Col>
                     <Col sm={4}>

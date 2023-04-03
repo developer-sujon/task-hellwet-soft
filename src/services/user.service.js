@@ -27,6 +27,15 @@ const getUserByEmail = (email) => {
 };
 
 /**
+ * Get user by id
+ * @param {string} id
+ * @returns {Promise<User>}
+ */
+const getUserById = (id) => {
+  return User.findById(id);
+};
+
+/**
  * update user by id
  * @param {string} id
  * @returns {Promise<User>}
@@ -39,4 +48,5 @@ module.exports = {
   createUser,
   getUserByEmail,
   updateUserById,
+  getUserById,
 };

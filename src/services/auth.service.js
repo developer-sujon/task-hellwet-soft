@@ -1,5 +1,6 @@
 //External Lib Import
 const httpStatus = require('http-status');
+const bcrypt = require('bcryptjs');
 
 //Internal Lib Import
 const tokenService = require('./token.service');
@@ -59,6 +60,8 @@ const refreshAuth = async (refreshToken) => {
  * @returns {Promise}
  */
 const resetPassword = async (otp, email, newPassword) => {
+  newPassword = await bcrypt.hash(newPassword, 8);
+
   const validOtp = await Otp.findOne({ email, otp, status: true });
 
   if (!validOtp) {

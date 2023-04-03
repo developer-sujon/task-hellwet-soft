@@ -120,5 +120,17 @@
   "name of the Category": "ক্যাটাগরি নাম",
   "the category is public": "এই ক্যাটাগরি পাবলিক",
   "no data found": "কোন তথ্য পাওয়া যায়নি",
+  "task": "টাস্ক",
+  "new": "নতুন",
+  "pending": "বিচারাধীন",
+  "canceled": "বাতিল",
+  "complete": "সম্পূর্ণ",
+  "choice status": "পছন্দের অবস্থা",
+  "title": "শিরোনাম",
+  "dueDate": "বকেয়া তারিখ",
+  "descriptions": "বর্ণনা",
+  "title of the task": "কাজের শিরোনাম",
+  "descriptions of the task": "কাজের বর্ণনা",
+  "status of count": "গণনার স্থিতি",
   "update date": "আপডেট তারিখ"
 }

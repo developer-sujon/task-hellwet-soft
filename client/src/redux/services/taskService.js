@@ -1,68 +1,45 @@
+//External Lib Import
+import { createApi } from '@reduxjs/toolkit/query/react';
+
 //Internal Lib Import
 import basefetchBaseQuery from './baseQuery';
 
-export const taskService = basefetchBaseQuery.injectEndpoints({
+export const taskService = createApi({
+  reducerPath: 'task',
+  tagTypes: ['task'],
+  baseQuery: basefetchBaseQuery('task'),
   endpoints: (builder) => ({
     taskCreate: builder.mutation({
       query: (postBody) => ({
-        url: 'task/taskCreate',
+        url: 'taskCreate',
         method: 'POST',
         body: postBody,
       }),
-      invalidatesTags: ['Task'],
+      invalidatesTags: ['task'],
     }),
     taskList: builder.query({
       query: () => ({
-        url: 'task/taskList',
+        url: 'taskList',
         method: 'GET',
       }),
-      providesTags: ['Task'],
-    }),
-    taskdropDown: builder.query({
-      query: () => ({
-        url: 'TaskdropDown',
-        method: 'GET',
-      }),
-      providesTags: ['Task'],
-    }),
-    taskPaginate: builder.query({
-      query: ({ pageNumber, perPage, order, searchKey }) => ({
-        url: `TaskPaginate/${pageNumber + '/' + perPage + '/' + order + '/' + searchKey}`,
-        method: 'GET',
-      }),
-      providesTags: ['Task'],
-    }),
-    taskDetails: builder.mutation({
-      query: (id) => ({
-        url: `task/taskDetails/${id}`,
-        method: 'GET',
-      }),
-      providesTags: ['Task'],
+      providesTags: ['task'],
     }),
     taskUpdate: builder.mutation({
       query: ({ id, postBody }) => ({
-        url: `task/taskUpdate/${id}`,
+        url: `taskUpdate/${id}`,
         method: 'PATCH',
         body: postBody,
       }),
-      invalidatesTags: ['Task'],
+      invalidatesTags: ['task'],
     }),
     taskDelete: builder.mutation({
       query: (id) => ({
-        url: `task/taskDelete/${id}`,
+        url: `taskDelete/${id}`,
         method: 'DELETE',
       }),
-      invalidatesTags: ['Task'],
+      invalidatesTags: ['task'],
     }),
   }),
 });
 
-export const {
-  useTaskCreateMutation,
-  useTaskListQuery,
-  useTaskdropDownQuery,
-  useTaskPaginateQuery,
-  useTaskDetailsMutation,
-  useTaskUpdateMutation,
-  useTaskDeleteMutation,
-} = taskService;
+export const { useTaskCreateMutation, useTaskListQuery, useTaskUpdateMutation, useTaskDeleteMutation } = taskService;
