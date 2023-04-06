@@ -6,7 +6,7 @@ import ToastMessage from '../../helpers/ToastMessage';
 import { setLoading } from '../slice/settingReducer';
 import { setLogout } from '../slice/authReducer';
 
-const SERVER_URL =process.env.REACT_APP_SERVER_URL|| "https://task-hellwet-soft-production.up.railway.app/api/v1"
+const SERVER_URL =process.env.REACT_APP_SERVER_URL|| "http://localhost:6100/api/v1"
 
 const basefetchBaseQuery = (url) => {
   const baseQuery = fetchBaseQuery({
