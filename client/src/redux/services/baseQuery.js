@@ -1,31 +1,33 @@
 //External Lib Import
-import { fetchBaseQuery } from '@reduxjs/toolkit/query/react';
+import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react';
 
 //Internal Lib Import
 import ToastMessage from '../../helpers/ToastMessage';
 import { setLoading } from '../slice/settingReducer';
 import { setLogout } from '../slice/authReducer';
 
-const SERVER_URL =process.env.REACT_APP_SERVER_URL|| "http://localhost:6100/api/v1"
+const SERVER_URL = process.env.REACT_APP_API_SERVER_URL || 'https://task-hellwet-soft-production.up.railway.app';
+const API_PREFIX_PATH = process.env.REACT_APP_API_PREFIX_PATH || '/api/v1';
 
-const basefetchBaseQuery = (url) => {
-  const baseQuery = fetchBaseQuery({
-    baseUrl: `${SERVER_URL}/${url}`,
-    prepareHeaders: (headers, { getState }) => {
-      const {
-        settingReducer: { language },
-        authReducer: { accessToken },
-      } = getState();
+const basefetchBaseQuery = fetchBaseQuery({
+  baseUrl: SERVER_URL + API_PREFIX_PATH,
+  prepareHeaders: (headers, { getState }) => {
+    const {
+      settingReducer: { language },
+      authReducer: { accessToken, refreshToken },
+    } = getState();
+    headers.set('authorization', accessToken ? `Bearer ${accessToken}` : '');
+    headers.set('accept-language', language);
+    return headers;
+  },
+});
 
-      headers.set('authorization', accessToken ? `Bearer ${accessToken}` : '');
-      headers.set('accept-language', language);
-      return headers;
-    },
-  });
-  return async (args, api, extraOptions) => {
+export const apiService = createApi({
+  reducerPath: API_PREFIX_PATH,
+  baseQuery: async (args, api, extraOptions) => {
     api.dispatch(setLoading(true));
 
-    const { error, data } = await baseQuery(args, api, extraOptions);
+    const { error, data } = await basefetchBaseQuery(args, api, extraOptions);
 
     if (error) {
       api.dispatch(setLoading(false));
@@ -51,7 +53,7 @@ const basefetchBaseQuery = (url) => {
       }
       return { data };
     }
-  };
-};
-
-export default basefetchBaseQuery;
+  },
+  tagTypes: [],
+  endpoints: (builder) => ({}),
+});

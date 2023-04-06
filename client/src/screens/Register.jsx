@@ -52,7 +52,7 @@ const Register = () => {
   };
 
   useEffect(() => {
-    if ((isSuccess, accessToken)) {
+    if (isSuccess || accessToken) {
       navigate('/login');
     }
   }, [isSuccess, accessToken]);
@@ -142,7 +142,7 @@ const Register = () => {
                                 ref={ref}
                                 isInvalid={errors.confirmPassword}
                                 placeholder="Confirm Password"
-                                type="confirmPassword"
+                                type="password"
                               />
                             )}
                           />

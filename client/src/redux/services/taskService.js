@@ -1,43 +1,79 @@
-//External Lib Import
-import { createApi } from '@reduxjs/toolkit/query/react';
-
 //Internal Lib Import
-import basefetchBaseQuery from './baseQuery';
+import { apiService } from './baseQuery';
+import { dashboardService } from './dashboardService';
 
-export const taskService = createApi({
-  reducerPath: 'task',
-  tagTypes: ['task'],
-  baseQuery: basefetchBaseQuery('task'),
+export const taskService = apiService.injectEndpoints({
   endpoints: (builder) => ({
+    taskList: builder.query({
+      query: () => ({
+        url: 'task/taskList',
+        method: 'GET',
+      }),
+    }),
     taskCreate: builder.mutation({
       query: (postBody) => ({
-        url: 'taskCreate',
+        url: 'task/taskCreate',
         method: 'POST',
         body: postBody,
       }),
-      invalidatesTags: ['task'],
+      async onQueryStarted(_, { dispatch, queryFulfilled }) {
+        try {
+          const { data } = await queryFulfilled;
+          dispatch(
+            apiService.util.updateQueryData('taskList', undefined, (draft) => {
+              draft.data.push(data.data);
+            })
+          );
+          //dispatch(dashboardService.endpoints.dashboardSummary.initiate());
+        } catch {}
+      },
     }),
-    taskList: builder.query({
-      query: () => ({
-        url: 'taskList',
-        method: 'GET',
-      }),
-      providesTags: ['task'],
-    }),
+
     taskUpdate: builder.mutation({
       query: ({ id, postBody }) => ({
-        url: `taskUpdate/${id}`,
+        url: `task/taskUpdate/${id}`,
         method: 'PATCH',
         body: postBody,
       }),
-      invalidatesTags: ['task'],
+
+      async onQueryStarted({ id, postBody }, { dispatch, queryFulfilled }) {
+        const patchTask = dispatch(
+          apiService.util.updateQueryData('taskList', undefined, (draft) => {
+            const findIndex = draft.data.findIndex((role) => role.id === id);
+            draft.data[findIndex].title = postBody.title;
+            draft.data[findIndex].status = postBody.status;
+            draft.data[findIndex].dueDate = postBody.dueDate;
+            draft.data[findIndex].descriptions = postBody.descriptions;
+          })
+        );
+
+        try {
+          await queryFulfilled;
+          //dispatch(dashboardService.endpoints.dashboardSummary.initiate());
+        } catch {
+          patchTask.undo();
+        }
+      },
     }),
     taskDelete: builder.mutation({
       query: (id) => ({
-        url: `taskDelete/${id}`,
+        url: `task/taskDelete/${id}`,
         method: 'DELETE',
       }),
-      invalidatesTags: ['task'],
+
+      async onQueryStarted(id, { dispatch, queryFulfilled }) {
+        const patchTask = dispatch(
+          apiService.util.updateQueryData('taskList', undefined, (draft) => {
+            draft.data = draft.data.filter((role) => role.id !== id);
+          })
+        );
+
+        try {
+          await queryFulfilled;
+        } catch {
+          patchTask.undo();
+        }
+      },
     }),
   }),
 });

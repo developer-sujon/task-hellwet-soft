@@ -1,17 +1,11 @@
-//External Lib Import
-import { createApi } from '@reduxjs/toolkit/query/react';
-
 //Internal Lib Import
-import basefetchBaseQuery from './baseQuery';
+import { apiService } from './baseQuery';
 
-export const profileService = createApi({
-  reducerPath: 'profile',
-  tagTypes: ['profile'],
-  baseQuery: basefetchBaseQuery('profile'),
+export const profileService = apiService.injectEndpoints({
   endpoints: (builder) => ({
     profileDetails: builder.query({
       query: () => ({
-        url: 'profileDetails',
+        url: 'profile/profileDetails',
         method: 'GET',
       }),
     }),

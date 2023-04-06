@@ -1,22 +1,15 @@
-//External Lib Import
-import { createApi } from '@reduxjs/toolkit/query/react';
-
 //Internal Lib Import
-import basefetchBaseQuery from './baseQuery';
+import { apiService } from './baseQuery';
 
-export const dashboardService = createApi({
-  reducerPath: 'dashboard',
-  tagTypes: ['dashboardSummary'],
-  baseQuery: basefetchBaseQuery('dashboard'),
+export const dashboardService = apiService.injectEndpoints({
   endpoints: (builder) => ({
     dashboardSummary: builder.query({
       query: () => ({
-        url: 'dashboardSummary',
+        url: 'dashboard/dashboardSummary',
         method: 'GET',
       }),
-      providesTags: ['dashboardSummary'],
     }),
   }),
 });
 
-export const { useDashboardSummaryQuery, useLazyDashboardSummaryQuery } = dashboardService;
+export const { useLazyDashboardSummaryQuery, useDashboardSummaryQuery } = dashboardService;

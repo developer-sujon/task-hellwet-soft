@@ -1,26 +1,20 @@
-//External Lib Import
-import { createApi } from '@reduxjs/toolkit/query/react';
-
 //External import
 import SessionHelper from '../../helpers/SessionHelper';
 import { setLogin } from '../slice/authReducer';
-import basefetchBaseQuery from './baseQuery';
+import { apiService } from './baseQuery';
 
-export const authService = createApi({
-  reducerPath: 'auth',
-  tagTypes: ['auth'],
-  baseQuery: basefetchBaseQuery('auth'),
+export const authService = apiService.injectEndpoints({
   endpoints: (builder) => ({
     register: builder.mutation({
       query: (data) => ({
-        url: '/register',
+        url: 'auth/register',
         method: 'POST',
         body: data,
       }),
     }),
     login: builder.mutation({
       query: (data) => ({
-        url: '/login',
+        url: 'auth/login',
         method: 'POST',
         body: data,
       }),
@@ -40,14 +34,14 @@ export const authService = createApi({
     }),
     forgotPassword: builder.mutation({
       query: (data) => ({
-        url: '/forgotPassword',
+        url: 'auth/forgotPassword',
         method: 'POST',
         body: data,
       }),
     }),
     verifyEmail: builder.mutation({
       query: ({ email, otp }) => ({
-        url: `/verifyEmail?otp=${otp}`,
+        url: `auth/verifyEmail?otp=${otp}`,
         method: 'POST',
         body: {
           email,
@@ -56,7 +50,7 @@ export const authService = createApi({
     }),
     resetPassword: builder.mutation({
       query: ({ password, email, otp }) => ({
-        url: `/resetPassword?otp=${otp}`,
+        url: `auth/resetPassword?otp=${otp}`,
         method: 'POST',
         body: {
           password,
