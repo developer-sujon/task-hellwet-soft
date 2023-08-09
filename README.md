@@ -1,4 +1,4 @@
-# Task for Hellwet Soft
+# Task
 
 ## Quick Start
 
@@ -17,7 +17,7 @@ cp .env.example .env
 ```
 ## Table of Contents
 
-- [Task for Hellwet Soft](#task-for-hellwet-soft)
+- [Task](#task)
   - [Quick Start](#quick-start)
   - [Table of Contents](#table-of-contents)
   - [Features](#features)
