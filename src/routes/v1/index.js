@@ -3,9 +3,7 @@ const express = require('express');
 
 //Internal Lib Import
 const authRoute = require('./auth.route');
-const profileRoute = require('./profile.route');
-const taskRoute = require('./task.route');
-const dashboardRoute = require('./dashboard.route');
+const clientRoute = require('./client.route');
 
 const router = express.Router();
 
@@ -15,16 +13,8 @@ const defaultRoutes = [
     route: authRoute,
   },
   {
-    path: '/profile',
-    route: profileRoute,
-  },
-  {
-    path: '/task',
-    route: taskRoute,
-  },
-  {
-    path: '/dashboard',
-    route: dashboardRoute,
+    path: '/client',
+    route: clientRoute,
   },
 ];
 

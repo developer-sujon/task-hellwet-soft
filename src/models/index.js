@@ -1,4 +1,9 @@
 module.exports.Token = require('./token.model');
 module.exports.User = require('./user.model');
 module.exports.Otp = require('./otp.model');
-module.exports.Task = require('./task.model');
+module.exports.Info = require('./info.model');
+module.exports.Testimonial = require('./testimonial.model');
+module.exports.Brand = require('./brand.model');
+module.exports.Service = require('./service.model');
+module.exports.Team = require('./team.model');
+module.exports.Blog = require('./blog.model');
